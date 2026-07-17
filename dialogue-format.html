@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dialogue Format · Dialogue Graph Toolkit Docs</title>
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<button class="nav-toggle" aria-label="Toggle navigation">☰</button>
+<div class="layout">
+  <nav class="sidebar">
+    <div class="sidebar-brand">
+      <span class="brand-mark">DG</span>
+      <span class="brand-name">Dialogue Graph<br>Toolkit</span>
+    </div>
+    <div class="sidebar-section-label">Docs</div>
+    <ul class="nav-list">
+      <li><a href="index.html">Overview</a></li>
+      <li><a href="getting-started.html">Getting Started</a></li>
+      <li><a href="editor-guide.html">Editor Guide</a></li>
+      <li><a href="dialogue-format.html">Dialogue Format</a></li>
+      <li><a href="integration.html">Integration</a></li>
+      <li><a href="exporting.html">Exporting</a></li>
+      <li><a href="licensing.html">Licensing</a></li>
+    </ul>
+    <div class="sidebar-footer">Godot 4.6</div>
+  </nav>
+
+  <main class="content">
+    <div class="content-inner">
+      <div class="page-header">
+        <span class="eyebrow">Reference</span>
+        <h1>Dialogue Format</h1>
+        <p class="lede">Every dialogue is one plain JSON file: an object keyed by node
+        id, where each node is exactly one of a line, a choice list, or a condition
+        list.</p>
+      </div>
+
+      <h2>Node shape</h2>
+      <p>Every node has a <code>display_name</code>, a <code>speaker</code>, and
+      <code>text</code>, plus exactly one of:</p>
+      <ul>
+        <li><code>"next": "&lt;id&gt;"</code> — a plain, unconditional link to the next
+        node (or <code>null</code> to end the dialogue there).</li>
+        <li><code>"choices": [...]</code> — player-facing options, each with a
+        <code>label</code>, a <code>next</code> id, and an optional <code>if</code>
+        condition (only shown as a clickable option if the condition passes).</li>
+        <li><code>"conditions": [...]</code> — auto-routed branches, each with an
+        <code>if</code> condition and a <code>next</code> id; the last entry (no
+        <code>if</code>) is the fallback/else case.</li>
+      </ul>
+
+      <h3>Example — a plain line</h3>
+      <pre><code>"start": {
+  "display_name": "Gate Challenge",
+  "speaker": "Guard",
+  "text": "Halt! State your business at the castle gate.",
+  "next": "player_options"
+}</code></pre>
+
+      <h3>Example — a choice node</h3>
+      <pre><code>"player_options": {
+  "display_name": "Player Response Choice",
+  "speaker": "Player",
+  "text": "How will you handle this?",
+  "choices": [
+    { "label": "I am a knight of the realm", "next": "knight_check" },
+    { "label": "Show my merchant permit.", "if": "has_permit", "next": "merchant_enter" },
+    { "label": "Sweet-talk the guard.", "if": "charisma >= 8", "next": "charm_success" },
+    { "label": "Turn back for now.", "next": "farewell" }
+  ]
+}</code></pre>
+
+      <h3>Example — a conditions node</h3>
+      <pre><code>"knight_check": {
+  "display_name": "Knight Credential Check",
+  "speaker": "Guard",
+  "text": "A knight? I'll need to verify your credentials.",
+  "conditions": [
+    { "if": "has_seal", "next": "knight_enter" },
+    { "if": "reputation >= 5", "next": "knight_trusted" },
+    { "next": "knight_denied" }
+  ]
+}</code></pre>
+      <p>At runtime, conditions are evaluated in order, top to bottom, excluding the
+      last entry. The <strong>first</strong> one that passes wins. If none pass, the
+      last entry (no <code>if</code>) is taken as the fallback.</p>
+
+      <h2>Condition syntax</h2>
+      <p>An <code>if</code> string is either a single token or three space-separated
+      tokens:</p>
+      <table>
+        <tr><th>Form</th><th>Example</th><th>Meaning</th></tr>
+        <tr>
+          <td><code>&lt;var&gt;</code></td>
+          <td><code>has_seal</code></td>
+          <td>True as soon as the blackboard variable has been set to anything (i.e. is
+          not <code>null</code>) — a simple "flag is set" check.</td>
+        </tr>
+        <tr>
+          <td><code>&lt;var&gt; &lt;op&gt; &lt;int&gt;</code></td>
+          <td><code>reputation &gt;= 5</code></td>
+          <td>Numeric comparison. Supported operators:
+          <code>&lt;</code>, <code>&lt;=</code>, <code>&gt;</code>, <code>&gt;=</code>.
+          False if the variable is unset.</td>
+        </tr>
+      </table>
+
+      <h2>Blackboard variables</h2>
+      <p>Variable <em>names</em> are discovered automatically — the runtime scans every
+      <code>if</code> string in the loaded file and extracts the first token of each.
+      Values are not part of the dialogue file at all; they live entirely in your game
+      code:</p>
+      <pre><code>DialogueManager.set_blackboard_variable("reputation", 5)
+DialogueManager.set_blackboard_variable("has_seal", true)</code></pre>
+      <p>Any variable that hasn't been set defaults to <code>null</code>, which makes
+      every condition referencing it evaluate to <code>false</code> — so an
+      unset flag behaves like "off", and an unset numeric variable behaves like
+      "fails every comparison."</p>
+
+      <div class="next-prev">
+        <a href="editor-guide.html">
+          <span class="direction">← Back</span>
+          Editor Guide
+        </a>
+        <a class="to-end" href="integration.html">
+          <span class="direction">Next</span>
+          Integration →
+        </a>
+      </div>
+    </div>
+  </main>
+</div>
+<script src="assets/js/site.js"></script>
+</body>
+</html>

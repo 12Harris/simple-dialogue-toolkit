@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Editor Guide · Simple Dialogue Graph Toolkit Docs</title>
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<button class="nav-toggle" aria-label="Toggle navigation">☰</button>
+<div class="layout">
+  <nav class="sidebar">
+    <div class="sidebar-brand">
+      <span class="brand-mark">SDT</span>
+      <span class="brand-name">Simple Dialogue <br>Toolkit</span>
+    </div>
+    <div class="sidebar-section-label">Docs</div>
+    <ul class="nav-list">
+      <li><a href="index.html">Overview</a></li>
+      <li><a href="getting-started.html">Getting Started</a></li>
+      <li><a href="editor-guide.html">Editor Guide</a></li>
+      <li><a href="dialogue-format.html">Dialogue Format</a></li>
+      <li><a href="integration.html">Integration</a></li>
+      <li><a href="exporting.html">Exporting</a></li>
+      <li><a href="licensing.html">Licensing</a></li>
+    </ul>
+    <div class="sidebar-footer">Godot 4.6</div>
+  </nav>
+
+  <main class="content">
+    <div class="content-inner">
+      <div class="page-header">
+        <span class="eyebrow">Editor Guide</span>
+        <h1>Using the Editor</h1>
+        <p class="lede">Everything is driven from a single canvas: right-click to add,
+        drag to wire, double-click to edit.</p>
+      </div>
+
+      <h2>Adding nodes</h2>
+      <p><strong>Right-click empty canvas space</strong> to open the Add Node menu, with
+      three node types:</p>
+      <table>
+        <tr><th>Node type</th><th>Has</th><th>Behavior</th></tr>
+        <tr>
+          <td>Dialogue</td>
+          <td><code>next</code></td>
+          <td>A plain line that flows straight to the next node (or ends the dialogue if
+          <code>next</code> is empty).</td>
+        </tr>
+        <tr>
+          <td>Choices</td>
+          <td><code>choices</code></td>
+          <td>Presents the player with clickable options; starts with 2 choices.</td>
+        </tr>
+        <tr>
+          <td>Conditions</td>
+          <td><code>conditions</code></td>
+          <td>Auto-routes based on blackboard state; starts with 1 <code>if</code> branch
+          plus a trailing else.</td>
+        </tr>
+      </table>
+
+      <h2>Editing content</h2>
+      <p><strong>Double-click</strong> any label — the node's title, speaker, body text,
+      or a choice/condition line — to edit it in place. It becomes a text field; press
+      <kbd>Enter</kbd> or click elsewhere to save.</p>
+      <div class="callout callout--note">
+        <span class="callout-title">Edits auto-submit</span>
+        <p>If you double-click a different label, click the node itself, or click
+        anywhere else (including empty canvas), whatever edit is currently open gets
+        submitted first. You never lose a half-typed edit by clicking away.</p>
+      </div>
+      <p>The dialogue body text also supports a <code>TW</code> shortcut: end a line with
+      <code>TW</code> and it's rendered as <code>[tw]</code> ("typewriter") in the saved
+      file — a hint the runtime's text box uses to animate that line letter-by-letter
+      instead of showing it instantly. This shortcut only applies to the body text field,
+      not to choice/condition/title/speaker labels, so writing "TW" at the end of a
+      choice label is left alone.</p>
+
+      <h2>Choices and conditions rows</h2>
+      <p>Both node types have a <strong>"+" button</strong> in the panel's bottom-right
+      corner that adds a new row directly — no menu, no confirmation. Left-click it once,
+      the row appears.</p>
+      <ul>
+        <li>Both cap out at <strong>6 rows</strong>. Once you hit the cap, the "+" button
+        disables itself (with a tooltip explaining why) until you delete a row.</li>
+        <li><strong>Right-click a choice row</strong>, or a condition row's
+        <code>if</code> line (not the trailing else row), to open a small "Delete" popup
+        for just that row.</li>
+        <li>A Choices node always keeps its <strong>first 2 choices</strong>; a
+        Conditions node always keeps its <strong>first <code>if</code></strong> (plus the
+        else row, which is never deletable at all). Those rows don't get a delete option.</li>
+      </ul>
+
+      <h2>Wiring connections</h2>
+      <ul>
+        <li><strong>Drag a node by its body</strong> to reposition it on the canvas.</li>
+        <li><strong>Drag from a connector dot</strong> — the small squares on a node's
+        left/right edge — to wire it to another node's <code>next</code>, a specific
+        choice, or a specific condition branch.</li>
+      </ul>
+
+      <h2>Selecting and deleting</h2>
+      <ul>
+        <li><strong>Left-click</strong> a node to select it.</li>
+        <li><strong>Delete</strong> removes the selected node.</li>
+      </ul>
+
+      <h2>Navigation</h2>
+      <ul>
+        <li><strong>Scroll</strong> to zoom.</li>
+        <li><strong>Drag the background</strong> to pan.</li>
+        <li><kbd>R</kbd> resets the view.</li>
+      </ul>
+
+      <h2>Saving</h2>
+      <ul>
+        <li><kbd>Ctrl</kbd> + <kbd>S</kbd> saves.</li>
+        <li>The <strong>File</strong> menu has New / Load / Save / Save As.</li>
+        <li>The Load/Save dialog has a <strong>Recent</strong> panel listing places
+        you've actually saved or loaded to (no manually-curated favorites list) — click
+        an entry to jump straight there.</li>
+      </ul>
+
+      <div class="next-prev">
+        <a href="getting-started.html">
+          <span class="direction">← Back</span>
+          Getting Started
+        </a>
+        <a class="to-end" href="dialogue-format.html">
+          <span class="direction">Next</span>
+          Dialogue Format →
+        </a>
+      </div>
+    </div>
+  </main>
+</div>
+<script src="assets/js/site.js"></script>
+</body>
+</html>

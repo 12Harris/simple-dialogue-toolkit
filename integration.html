@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Integration · Simple Dialogue Graph Toolkit Docs</title>
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<button class="nav-toggle" aria-label="Toggle navigation">☰</button>
+<div class="layout">
+  <nav class="sidebar">
+    <div class="sidebar-brand">
+      <span class="brand-mark">SDT</span>
+      <span class="brand-name">Simple Dialogue <br>Toolkit</span>
+    </div>
+    <div class="sidebar-section-label">Docs</div>
+    <ul class="nav-list">
+      <li><a href="index.html">Overview</a></li>
+      <li><a href="getting-started.html">Getting Started</a></li>
+      <li><a href="editor-guide.html">Editor Guide</a></li>
+      <li><a href="dialogue-format.html">Dialogue Format</a></li>
+      <li><a href="integration.html">Integration</a></li>
+      <li><a href="exporting.html">Exporting</a></li>
+      <li><a href="licensing.html">Licensing</a></li>
+    </ul>
+    <div class="sidebar-footer">Godot 4.6</div>
+  </nav>
+
+  <main class="content">
+    <div class="content-inner">
+      <div class="page-header">
+        <span class="eyebrow">Integration</span>
+        <h1>Integrating into your own project</h1>
+        <p class="lede">The source package is meant to be copied straight into an
+        existing Godot project.</p>
+      </div>
+
+      <p>It intentionally leaves out <code>project.godot</code>,
+      <code>scenes/launcher.tscn</code>, and its "Play Demo" button — you already have
+      your own project settings and your own main scene.</p>
+
+      <h2>1. Copy the folders in</h2>
+      <p>Copy <code>dialogue/</code>, <code>ui/</code>, <code>utils/</code>,
+      <code>assets/</code>, and <code>data/</code> into your project. Merge
+      <code>assets/</code> with your own if you already have one, and watch for filename
+      collisions.</p>
+
+      <h2>2. Register the autoload</h2>
+      <p>This is the one thing that doesn't travel with a folder copy, since it's stored
+      in <code>project.godot</code>:</p>
+      <ol>
+        <li>Go to <strong>Project → Project Settings → Autoload</strong>.</li>
+        <li>Add <code>dialogue/DialogueManager.gd</code>.</li>
+        <li>Name it <code>DialogueManager</code>.</li>
+      </ol>
+
+      <h2>3. Using the editor in your project</h2>
+      <p>Open <code>scenes/dialogue graph example scene.tscn</code> and press
+      <strong>Play</strong> (▶) on that scene specifically — Godot's "Run Current Scene",
+      not your project's main scene. It loads <code>data/castle_dialogue.json</code> by
+      default; use <strong>File → Load Graph</strong> to point it at your own file, or
+      <strong>File → New Graph</strong> to start from scratch. The "◀ Menu" button won't
+      appear since there's no launcher in your project — that's expected.</p>
+
+      <h2>4. Playing a dialogue in your own game</h2>
+      <pre><code>DialogueManager.load_dialogue("res://path/to/your_dialogue.json")
+DialogueManager.start()</code></pre>
+      <p>Then connect to its signals to drive your own UI, or just instance
+      <code>scenes/main.tscn</code>'s <code>DialogueBox</code> node as a ready-made one.
+      See <code>dialogue/dialogue.gd</code> for the minimal example the demo scene
+      uses.</p>
+
+      <h3>Signals</h3>
+      <table>
+        <tr><th>Signal</th><th>Fires when</th></tr>
+        <tr>
+          <td><code>dialogue_started</code></td>
+          <td><code>start()</code> is called.</td>
+        </tr>
+        <tr>
+          <td><code>line_delivered(speaker, text)</code></td>
+          <td>A plain line, or a choices/conditions node's own text, is ready to
+          display.</td>
+        </tr>
+        <tr>
+          <td><code>choices_presented(choices)</code></td>
+          <td>A choices node is reached — only choices with no <code>if</code>, or whose
+          <code>if</code> currently passes, are included as clickable options.</td>
+        </tr>
+        <tr>
+          <td><code>check_conditions(conditions)</code></td>
+          <td>A conditions node's line has finished displaying — evaluate branches in
+          order and advance to the first passing one, or the fallback.</td>
+        </tr>
+        <tr>
+          <td><code>dialogue_ended</code></td>
+          <td>The dialogue reaches a node with <code>next: null</code> (or an
+          equivalent dead end).</td>
+        </tr>
+      </table>
+
+      <h2>5. Blackboard variables</h2>
+      <p>Variables used by <code>if</code> conditions (like
+      <code>"charisma &gt;= 8"</code>) are read automatically from your dialogue file's
+      condition strings and default to <code>null</code>. Set real values before
+      starting the dialogue:</p>
+      <pre><code>DialogueManager.set_blackboard_variable("charisma", 8)
+DialogueManager.set_blackboard_variable("has_permit", true)
+DialogueManager.start()</code></pre>
+      <p>See <a href="dialogue-format.html">Dialogue Format</a> for exactly how condition
+      strings are parsed, including a runtime quirk around the <code>==</code>
+      operator worth knowing about before you rely on it.</p>
+
+      <div class="next-prev">
+        <a href="dialogue-format.html">
+          <span class="direction">← Back</span>
+          Dialogue Format
+        </a>
+        <a class="to-end" href="exporting.html">
+          <span class="direction">Next</span>
+          Exporting →
+        </a>
+      </div>
+    </div>
+  </main>
+</div>
+<script src="assets/js/site.js"></script>
+</body>
+</html>

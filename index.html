@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Overview · Simple Dialogue Toolkit Docs</title>
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<button class="nav-toggle" aria-label="Toggle navigation">☰</button>
+<div class="layout">
+  <nav class="sidebar">
+    <div class="sidebar-brand">
+      <span class="brand-mark">SDT</span>
+      <span class="brand-name">Simple Dialogue <br>Toolkit</span>
+    </div>
+    <div class="sidebar-section-label">Docs</div>
+    <ul class="nav-list">
+      <li><a href="index.html">Overview</a></li>
+      <li><a href="getting-started.html">Getting Started</a></li>
+      <li><a href="editor-guide.html">Editor Guide</a></li>
+      <li><a href="dialogue-format.html">Dialogue Format</a></li>
+      <li><a href="integration.html">Integration</a></li>
+      <li><a href="exporting.html">Exporting</a></li>
+      <li><a href="licensing.html">Licensing</a></li>
+    </ul>
+    <div class="sidebar-footer">Godot 4.6</div>
+  </nav>
+
+  <main class="content">
+    <div class="content-inner">
+
+      <div class="hero">
+        <span class="badge" style="background:rgba(255,255,255,0.18);color:#fff;">Godot 4.6</span>
+        <h1>Simple Dialogue Toolkit</h1>
+        <p>A visual, node-based editor for branching dialogue trees, plus a small runtime
+        that plays those dialogues back in-game. Build a graph by clicking around a canvas,
+        save it as plain JSON, and drop that JSON into any Godot project that has the
+        runtime autoloaded.</p>
+        <div class="hero-actions">
+          <a class="btn btn--light" href="getting-started.html">Get Started →</a>
+          <a class="btn btn--outline" href="editor-guide.html">Editor Guide</a>
+        </div>
+      </div>
+
+      <h2>What's in the box</h2>
+      <div class="card-grid">
+        <div class="card">
+          <h3><span class="dot dot--choice"></span> Visual graph editor</h3>
+          <p>Right-click to add nodes, drag to wire connections, double-click any label
+          to edit it in place. Everything autosaves to a plain JSON file you control.</p>
+        </div>
+        <div class="card">
+          <h3><span class="dot dot--choice-if"></span> Conditional choices</h3>
+          <p>Attach an <code>if</code> expression to any player choice — it only appears
+          as an option when the condition passes at runtime.</p>
+        </div>
+        <div class="card">
+          <h3><span class="dot dot--condition"></span> Auto-routed branches</h3>
+          <p>Conditions nodes evaluate a list of <code>if</code> branches in order and
+          route automatically, falling back to a trailing else case.</p>
+        </div>
+        <div class="card">
+          <h3><span class="dot dot--else"></span> Blackboard variables</h3>
+          <p>Conditions read from a simple key/value blackboard that your game code
+          controls — reputation, flags, stats, whatever you need.</p>
+        </div>
+  
+        <div class="card">
+          <h3><span class="dot" style="background:var(--color-accent-red)"></span> Drop-in runtime</h3>
+          <p>One autoload (<code>DialogueManager</code>) and a ready-made dialogue box UI —
+          wire up its signals and you're playing dialogue in your own game.</p>
+        </div>
+      </div>
+
+      <h2>Two ways to get it</h2>
+      <table>
+        <tr><th>Package</th><th>What it's for</th></tr>
+        <tr>
+          <td><strong>Standalone app</strong> (Windows)</td>
+          <td>Download, run, and try the editor plus a live playable demo — no Godot
+          install required. Good for a quick look, or for authoring dialogue JSON to
+          hand off to a consumer you write yourself in another engine.</td>
+        </tr>
+        <tr>
+          <td><strong>Source package</strong></td>
+          <td>The <code>dialogue/</code>, <code>ui/</code>, <code>utils/</code>,
+          <code>assets/</code>, and <code>data/</code> folders as a plain download, meant
+          to be dropped straight into your own Godot project. Gets you the editor
+          <em>and</em> the runtime playback system as working, pluggable pieces.</td>
+        </tr>
+      </table>
+      <p>Both packages share the exact same scenes and scripts — the standalone build
+      just adds a launcher scene with a menu to pick between the editor and the demo.</p>
+
+      <h2>How a dialogue file is shaped</h2>
+      <p>Every dialogue is one JSON file: an object keyed by node id, where each node is
+      exactly one of a plain line, a player choice list, or an auto-routed condition
+      list. See <a href="dialogue-format.html">Dialogue Format</a> for the full schema.</p>
+
+      <div class="next-prev">
+        <span></span>
+        <a class="to-end" href="getting-started.html">
+          <span class="direction">Next</span>
+          Getting Started →
+        </a>
+      </div>
+
+    </div>
+  </main>
+</div>
+<script src="assets/js/site.js"></script>
+</body>
+</html>
