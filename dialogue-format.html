@@ -107,17 +107,6 @@
         </tr>
       </table>
 
-      <div class="callout callout--bug">
-        <span class="callout-title">Known runtime quirk: <code>==</code></span>
-        <p>The runtime's condition evaluator only special-cases
-        <code>&lt;</code>, <code>&lt;=</code>, <code>&gt;</code>, <code>&gt;=</code>.
-        Any other operator — including <code>==</code> — falls through to a
-        <strong>not-equal</strong> comparison instead of an equality check. If your
-        graph needs an exact-match condition, prefer <code>&gt;=</code> and
-        <code>&lt;=</code> together (e.g. two branches bracketing the value), or be aware
-        that <code>"score == 10"</code> currently means "score is not 10" at runtime.</p>
-      </div>
-
       <h2>Blackboard variables</h2>
       <p>Variable <em>names</em> are discovered automatically — the runtime scans every
       <code>if</code> string in the loaded file and extracts the first token of each.

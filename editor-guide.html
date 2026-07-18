@@ -94,6 +94,54 @@
         else row, which is never deletable at all). Those rows don't get a delete option.</li>
       </ul>
 
+      <h2>Writing conditions on a row</h2>
+      <p>Double-clicking a row to edit it (see "Editing content" above) works
+      differently for choice rows than for condition rows, since a choice needs both a
+      condition <em>and</em> player-facing label, while a condition row is just the
+      expression.</p>
+
+      <h3>Choice rows</h3>
+      <p>Double-clicking a choice opens a single text field containing the condition
+      and the label together, separated by a pipe (<code>|</code>):</p>
+      <pre><code>charisma >= 8 | Sweet-talk the guard.</code></pre>
+      <ul>
+        <li>Everything before the <code>|</code> is the <code>if</code> expression;
+        everything after it is the choice's label.</li>
+        <li><strong>Leave out the <code>|</code> entirely</strong> (or leave the part
+        before it blank) to make the choice unconditional — typing just
+        <code>Turn back for now.</code> with no pipe saves it as a plain choice with no
+        <code>if</code> at all.</li>
+        <li>Adding a <code>|</code> to a previously-plain choice is what turns it
+        conditional; removing the <code>|</code> from a conditional choice demotes it
+        back to plain and drops its <code>if</code>.</li>
+      </ul>
+
+      <h3>Condition rows</h3>
+      <p>Double-clicking a condition node's <code>if</code> row (not the trailing else
+      row, which has nothing to edit) opens a text field with just the raw expression —
+      no pipe, no label:</p>
+      <pre><code>reputation >= 5</code></pre>
+
+      <h3>Validation</h3>
+      <p>Whatever you type as the condition part is checked against the same
+      <code>&lt;var&gt;</code> or <code>&lt;var&gt; &lt;op&gt; &lt;int&gt;</code> shape
+      described in <a href="dialogue-format.html">Dialogue Format</a>. If it doesn't
+      match, the edit is rejected and the row keeps its previous text — so a typo won't
+      silently corrupt the row, but it also won't tell you what's wrong beyond declining
+      to save.</p>
+      <div class="callout callout--bug">
+        <span class="callout-title">The editor accepts <code>==</code> and <code>!=</code> too</span>
+        <p>The editor's own validation is more permissive than the runtime: it accepts
+        <code>==</code> and <code>!=</code> as syntactically valid operators alongside
+        <code>&lt;</code>, <code>&lt;=</code>, <code>&gt;</code>, <code>&gt;=</code>, so
+        typing <code>charisma == 8</code> saves without complaint. At runtime, though,
+        both <code>==</code> and <code>!=</code> are evaluated identically as
+        "not equal" (see the <code>==</code> quirk on
+        <a href="dialogue-format.html">Dialogue Format</a>) — so the editor won't warn
+        you that an <code>==</code> condition doesn't mean what it looks like it
+        means.</p>
+      </div>
+
       <h2>Wiring connections</h2>
       <ul>
         <li><strong>Drag a node by its body</strong> to reposition it on the canvas.</li>
