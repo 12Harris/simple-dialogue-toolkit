@@ -129,18 +129,7 @@
       match, the edit is rejected and the row keeps its previous text — so a typo won't
       silently corrupt the row, but it also won't tell you what's wrong beyond declining
       to save.</p>
-      <div class="callout callout--bug">
-        <span class="callout-title">The editor accepts <code>==</code> and <code>!=</code> too</span>
-        <p>The editor's own validation is more permissive than the runtime: it accepts
-        <code>==</code> and <code>!=</code> as syntactically valid operators alongside
-        <code>&lt;</code>, <code>&lt;=</code>, <code>&gt;</code>, <code>&gt;=</code>, so
-        typing <code>charisma == 8</code> saves without complaint. At runtime, though,
-        both <code>==</code> and <code>!=</code> are evaluated identically as
-        "not equal" (see the <code>==</code> quirk on
-        <a href="dialogue-format.html">Dialogue Format</a>) — so the editor won't warn
-        you that an <code>==</code> condition doesn't mean what it looks like it
-        means.</p>
-      </div>
+      
 
       <h2>Wiring connections</h2>
       <ul>
