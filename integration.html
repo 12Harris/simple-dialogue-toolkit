@@ -38,17 +38,15 @@
         existing Godot project.</p>
       </div>
 
-      <p>It intentionally leaves out <code>project.godot</code> and its "Play Demo"
-      button — you already have your own project settings and your own main scene.</p>
+      <p>It intentionally leaves out <code>project.godot</code>,
+      <code>scenes/launcher.tscn</code>, and its "Play Demo" button — you already have
+      your own project settings and your own main scene.</p>
 
       <h2>1. Copy the folders in</h2>
       <p>Copy <code>dialogue/</code>, <code>ui/</code>, <code>utils/</code>,
-      <code>assets/</code>, <code>data/</code>, and <code>scenes/</code> into your
-      project. <code>ui/DialogueBox.gd</code> preloads
-      <code>res://scenes/text_box.tscn</code> directly, so <code>scenes/</code> has to
-      come along too — you just don't need <code>scenes/launcher.tscn</code> from it,
-      since that's only the standalone build's menu screen. Merge <code>assets/</code>
-      with your own if you already have one, and watch for filename collisions.</p>
+      <code>assets/</code>, and <code>data/</code> into your project. Merge
+      <code>assets/</code> with your own if you already have one, and watch for filename
+      collisions.</p>
 
       <h2>2. Register the autoload</h2>
       <p>This is the one thing that doesn't travel with a folder copy, since it's stored
