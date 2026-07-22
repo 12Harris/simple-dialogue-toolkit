@@ -59,9 +59,13 @@
       pieces inside your own Godot project.</p>
       <ol>
         <li>Copy the <code>dialogue/</code>, <code>ui/</code>, <code>utils/</code>,
-        <code>assets/</code>, and <code>data/</code> folders into your project (merge
-        <code>assets/</code> with your own if you already have one — watch for filename
-        collisions).</li>
+        <code>assets/</code>, <code>data/</code>, and <code>scenes/</code> folders into
+        your project (merge <code>assets/</code> with your own if you already have
+        one — watch for filename collisions). <code>scenes/</code> is required even
+        though it's not scripting logic — <code>DialogueBox.gd</code> preloads
+        <code>scenes/text_box.tscn</code> directly. You can skip
+        <code>scenes/launcher.tscn</code>, which is only the standalone build's menu
+        screen.</li>
         <li>Register the autoload — this is the one thing that doesn't travel with a
         folder copy, since it's stored in <code>project.godot</code>: go to
         <strong>Project → Project Settings → Autoload</strong>, add
