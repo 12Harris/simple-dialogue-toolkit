@@ -20,7 +20,9 @@
       <li><a href="getting-started.html">Getting Started</a></li>
       <li><a href="editor-guide.html">Editor Guide</a></li>
       <li><a href="dialogue-format.html">Dialogue Format</a></li>
+      <li><a href="tips.html">Tips</a></li>
       <li><a href="integration.html">Integration</a></li>
+      <li><a href="scripting.html">Scripting</a></li>
       <li><a href="exporting.html">Exporting</a></li>
       <li><a href="licensing.html">Licensing</a></li>
     </ul>
@@ -102,10 +104,19 @@
           <td><code>&lt;var&gt; &lt;op&gt; &lt;int&gt;</code></td>
           <td><code>reputation &gt;= 5</code></td>
           <td>Numeric comparison. Supported operators:
-          <code>&lt;</code>, <code>&lt;=</code>, <code>&gt;</code>, <code>&gt;=</code>.
-          False if the variable is unset.</td>
+          <code>&lt;</code>, <code>&lt;=</code>, <code>&gt;</code>, <code>&gt;=</code>,
+          <code>==</code>, <code>!=</code>. False if the variable is unset.</td>
         </tr>
       </table>
+
+      <div class="callout callout--note">
+        <span class="callout-title">Unrecognized operators fail closed</span>
+        <p>Only the six operators above are understood. Anything else in the operator
+        position (a typo, an unsupported symbol) makes the whole condition evaluate to
+        <code>false</code> rather than throwing an error — so a mistyped operator is a
+        silent no-match rather than a crash. A quick manual playtest of that branch is
+        the easiest way to catch that kind of typo.</p>
+      </div>
 
       <h2>Blackboard variables</h2>
       <p>Variable <em>names</em> are discovered automatically — the runtime scans every
@@ -124,9 +135,9 @@ DialogueManager.set_blackboard_variable("has_seal", true)</code></pre>
           <span class="direction">← Back</span>
           Editor Guide
         </a>
-        <a class="to-end" href="integration.html">
+        <a class="to-end" href="tips.html">
           <span class="direction">Next</span>
-          Integration →
+          Tips →
         </a>
       </div>
     </div>

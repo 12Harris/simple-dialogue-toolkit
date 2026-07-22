@@ -20,7 +20,9 @@
       <li><a href="getting-started.html">Getting Started</a></li>
       <li><a href="editor-guide.html">Editor Guide</a></li>
       <li><a href="dialogue-format.html">Dialogue Format</a></li>
+      <li><a href="tips.html">Tips</a></li>
       <li><a href="integration.html">Integration</a></li>
+      <li><a href="scripting.html">Scripting</a></li>
       <li><a href="exporting.html">Exporting</a></li>
       <li><a href="licensing.html">Licensing</a></li>
     </ul>
@@ -72,12 +74,68 @@
         anywhere else (including empty canvas), whatever edit is currently open gets
         submitted first. You never lose a half-typed edit by clicking away.</p>
       </div>
-      <p>The dialogue body text also supports a <code>TW</code> shortcut: end a line with
-      <code>TW</code> and it's rendered as <code>[tw]</code> ("typewriter") in the saved
-      file — a hint the runtime's text box uses to animate that line letter-by-letter
-      instead of showing it instantly. This shortcut only applies to the body text field,
-      not to choice/condition/title/speaker labels, so writing "TW" at the end of a
-      choice label is left alone.</p>
+      <p>The dialogue body text also supports shorthand tags, typed at the end of a
+      line:</p>
+      <table>
+        <tr><th>Type this</th><th>Becomes</th><th>Meaning</th></tr>
+        <tr>
+          <td><code>TW</code></td>
+          <td><code>[tw]</code></td>
+          <td>"Typewriter" — a hint the runtime's text box uses to animate that line
+          letter-by-letter instead of showing it instantly.</td>
+        </tr>
+        <tr>
+          <td><code>TO 3</code></td>
+          <td><code>[timeout:3]</code></td>
+          <td>A numeric tag (<code>TO</code> followed by an integer).</td>
+        </tr>
+        <tr>
+          <td><code>nodisplay</code></td>
+          <td><code>[nodisplay]</code></td>
+          <td>A flag tag with no number attached.</td>
+        </tr>
+        <tr>
+          <td><code>DT 2</code></td>
+          <td><code>[displaytime:2]</code></td>
+          <td>A numeric tag (<code>DT</code> followed by an integer).
+          <strong>Only available on a Conditions node's body text</strong> — see the
+          note below.</td>
+        </tr>
+      </table>
+      <div class="callout callout--note">
+        <span class="callout-title">Shortcuts are case-sensitive</span>
+        <p><code>TW</code>, <code>TO</code>, and <code>DT</code> must be typed in
+        uppercase exactly as shown — lowercase (<code>tw</code>, <code>to</code>,
+        <code>dt</code>) isn't recognized and is left as plain text.
+        <code>nodisplay</code> is the one exception and stays lowercase.</p>
+      </div>
+      <div class="callout callout--note">
+        <span class="callout-title">Numbers must be non-negative</span>
+        <p><code>TO</code> and <code>DT</code> only accept whole numbers with no minus
+        sign — <code>TO -1</code> or <code>DT -1</code> aren't recognized as shortcuts
+        and are left as plain, unconverted text, same as any other unrecognized
+        trailing word.</p>
+      </div>
+      <p>Whichever of these tags a line already has (from earlier edits) always stay
+      attached and get reordered together — but <strong>only one NEW tag can be added
+      per edit</strong>: if you type more than one raw shortcut at the end of a single
+      edit, only the last one you typed converts, and the rest are left as plain text
+      until you add them on a later edit. For example, typing
+      <code>"... TW TO 3"</code> in one go only converts the trailing
+      <code>TO 3</code>, leaving <code>"... TW [timeout:3]"</code> — double-click again
+      and add just <code>TW</code> by itself to pick it up too, which then saves as
+      <code>"... [timeout:3] [tw]"</code>. <code>[tw]</code> always ends up as the very
+      last tag once present, regardless of typed order, since that's what the
+      runtime's typewriter check looks for. These shortcuts only apply to the body
+      text field, not to choice/condition/title/speaker labels, so writing "TW",
+      "TO 3", "nodisplay", or "DT 2" at the end of a choice label is left alone.</p>
+      <div class="callout callout--note">
+        <span class="callout-title"><code>DT</code> is Conditions-only</span>
+        <p>The <code>DT N</code> shortcut only converts on the body text of a
+        Conditions node. On a Dialogue or Choices node, typing <code>DT 2</code>
+        at the end of a line is left as plain, unconverted text — it isn't a recognized
+        shortcut there.</p>
+      </div>
 
       <h2>Choices and conditions rows</h2>
       <p>Both node types have a <strong>"+" button</strong> in the panel's bottom-right
@@ -129,7 +187,16 @@
       match, the edit is rejected and the row keeps its previous text — so a typo won't
       silently corrupt the row, but it also won't tell you what's wrong beyond declining
       to save.</p>
-      
+      <div class="callout callout--note">
+        <span class="callout-title">Validation matches the runtime</span>
+        <p>The editor accepts exactly the six operators the runtime understands —
+        <code>&lt;</code>, <code>&lt;=</code>, <code>&gt;</code>, <code>&gt;=</code>,
+        <code>==</code>, <code>!=</code> — so <code>charisma == 8</code> saves and
+        evaluates as a true equality check at runtime (see
+        <a href="dialogue-format.html">Dialogue Format</a>). Anything else in the
+        operator position is rejected by the editor before it ever reaches the
+        runtime.</p>
+      </div>
 
       <h2>Wiring connections</h2>
       <ul>

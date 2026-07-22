@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tips · Simple Dialogue Toolkit Docs</title>
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<button class="nav-toggle" aria-label="Toggle navigation">☰</button>
+<div class="layout">
+  <nav class="sidebar">
+    <div class="sidebar-brand">
+      <span class="brand-mark">SDT</span>
+      <span class="brand-name">Simple Dialogue<br>Toolkit</span>
+    </div>
+    <div class="sidebar-section-label">Docs</div>
+    <ul class="nav-list">
+      <li><a href="index.html">Overview</a></li>
+      <li><a href="getting-started.html">Getting Started</a></li>
+      <li><a href="editor-guide.html">Editor Guide</a></li>
+      <li><a href="dialogue-format.html">Dialogue Format</a></li>
+      <li><a href="tips.html">Tips</a></li>
+      <li><a href="integration.html">Integration</a></li>
+      <li><a href="scripting.html">Scripting</a></li>
+      <li><a href="exporting.html">Exporting</a></li>
+      <li><a href="licensing.html">Licensing</a></li>
+    </ul>
+    <div class="sidebar-footer">Godot 4.6</div>
+  </nav>
+
+  <main class="content">
+    <div class="content-inner">
+      <div class="page-header">
+        <span class="eyebrow">Tips &amp; Tricks</span>
+        <h1>Getting the most out of the four text options</h1>
+        <p class="lede">A closer look at <code>tw</code>, <code>timeout</code>,
+        <code>displaytime</code>, and <code>nodisplay</code> — what each actually does
+        at runtime, how they combine, and a couple of gotchas worth knowing before you
+        lean on them.</p>
+      </div>
+
+      <h2>The four options, recapped</h2>
+      <table>
+        <tr><th>Type this</th><th>Saved as</th><th>Where</th><th>Effect at runtime</th></tr>
+        <tr>
+          <td><code>TW</code></td>
+          <td><code>[tw]</code></td>
+          <td>Any node's body text</td>
+          <td>The line animates in letter-by-letter instead of appearing instantly.</td>
+        </tr>
+        <tr>
+          <td><code>TO 3</code></td>
+          <td><code>[timeout:3]</code></td>
+          <td>Any node's body text</td>
+          <td>The dialogue box is hidden for 3 seconds <em>before</em> the line shows
+          at all, then appears and <code>line_delivered</code> fires.</td>
+        </tr>
+        <tr>
+          <td><code>nodisplay</code></td>
+          <td><code>[nodisplay]</code></td>
+          <td>Any node's body text</td>
+          <td>The line is never shown and <code>line_delivered</code> never fires for
+          this node — useful for a node that only exists to set up choices/conditions
+          silently.</td>
+        </tr>
+        <tr>
+          <td><code>DT 2</code></td>
+          <td><code>[displaytime:2]</code></td>
+          <td>Conditions node body text only</td>
+          <td>The node waits 2 seconds, then auto-evaluates its branches and advances —
+          this is the timer the countdown label in the dialogue box counts down.</td>
+        </tr>
+      </table>
+      <p>See <a href="editor-guide.html">Editor Guide</a> for exactly how typing these
+      shortcuts works in the graph editor.</p>
+
+      <h2>How they combine</h2>
+      <p>All four can appear on the same line at once — they're independent tags, not
+      alternatives. A Conditions node's body text can legally end up as something like
+      <code>"...[displaytime:4] [timeout:1] [tw]"</code>: the box stays hidden for 1
+      second, then the line types itself out, and 4 seconds after the node started
+      processing, the conditions are evaluated and it moves on regardless of whether
+      the typewriter animation has finished.</p>
+      <ul>
+        <li><strong><code>timeout</code> delays the line appearing at all</strong>;
+        <code>tw</code> only affects how it appears once it does. Combine them for a
+        "beat of silence, then type it out" feel.</li>
+        <li><strong><code>displaytime</code> is independent of <code>timeout</code> and
+        <code>tw</code></strong> — it's timed from when the Conditions node starts
+        processing, not from when the line finishes displaying or finishes typing. A
+        short <code>displaytime</code> combined with a long <code>timeout</code> or a
+        slow typewriter reveal can mean the node auto-advances before the player has
+        even seen the full line — worth previewing in-editor before shipping a
+        combination like that.</li>
+        <li><strong><code>nodisplay</code> skips the line and the timers that gate it
+        showing</strong> (<code>timeout</code>, <code>tw</code>) but does
+        <em>not</em> skip <code>displaytime</code> on a Conditions node — the
+        node still silently waits out its <code>displaytime</code> before
+        auto-advancing, it just never shows anything while doing so. This combination
+        (<code>nodisplay</code> + <code>displaytime</code>) is a clean way to build an
+        invisible "wait N seconds, then branch" node.</li>
+        <li>A Conditions node with no <code>displaytime</code> tag advances
+        essentially immediately once ready — there's no default wait. Give it a
+        <code>DT</code> value if you want the countdown label (and the pause before
+        branching) to actually be visible/felt.</li>
+      </ul>
+
+      <h2>Authoring gotchas</h2>
+
+      <div class="callout callout--note">
+        <span class="callout-title">Only one new shortcut converts per edit</span>
+        <p>If you type more than one raw shortcut (like <code>TW</code> and
+        <code>TO 3</code>) in the same edit, only the last one you typed converts —
+        the rest stay as plain text until you edit the line again. Already-converted
+        bracket tags (<code>[tw]</code>, <code>[timeout:3]</code>, etc.) aren't
+        affected by this and stack freely. See <a href="editor-guide.html">Editor
+        Guide</a> for the full explanation and an example.</p>
+      </div>
+
+      <div class="callout callout--note">
+        <span class="callout-title">Case and sign matter</span>
+        <p><code>TW</code>, <code>TO</code>, and <code>DT</code> must be uppercase —
+        lowercase versions are left as plain text. <code>nodisplay</code> is the one
+        exception and must stay lowercase. None of the numeric options accept a minus
+        sign; <code>TO -1</code> or <code>DT -1</code> just don't convert.</p>
+      </div>
+
+      <div class="callout callout--warning">
+        <span class="callout-title">Keep tagged lines at least a few words long</span>
+        <p>The runtime looks for these tags by checking a small fixed window of
+        trailing words in the node's text. A line that's very short — fewer than four
+        space-separated words total, tags included — can fall outside that window and
+        either fail to have its tag recognized, or in the shortest cases, error when
+        the runtime tries to read a word position that doesn't exist. If you're using
+        any of these tags, it's safest to pad the line out to at least a handful of
+        words (or add a few words of filler if the line is naturally very short) rather
+        than relying on a two- or three-word line plus a tag.</p>
+      </div>
+
+      <div class="callout callout--note">
+        <span class="callout-title">Put multiple tags at the very end, together</span>
+        <p>Whichever tags a line has always get kept together at the trailing edge of
+        the text once you edit it (with <code>[tw]</code> normalized to come last).
+        Avoid manually placing a tag in the middle of a sentence in the underlying JSON
+        if you're hand-editing the file instead of using the graph editor — the
+        runtime's own tag detection, like the editor's, expects them clustered at the
+        end of the line.</p>
+      </div>
+
+      <h2>Suggested patterns</h2>
+      <ul>
+        <li><strong>Dramatic reveal:</strong> <code>[timeout:1] [tw]</code> — a short
+        pause, then the line types itself out.</li>
+        <li><strong>Silent setup node:</strong> <code>[nodisplay]</code> on a plain
+        Dialogue node whose only job is to flow straight into the next node — nothing
+        shown, no pause.</li>
+        <li><strong>Timed decision window:</strong> on a Conditions node,
+        <code>[displaytime:5] [tw]</code> — the line types out, the countdown label
+        ticks down from 5 seconds, and whichever branch's condition is true when it
+        hits zero gets taken.</li>
+        <li><strong>Invisible timed branch:</strong> <code>[nodisplay]
+        [displaytime:3]</code> on a Conditions node — nothing is shown to the player at
+        all, but the node still waits 3 seconds before evaluating and advancing; handy
+        for pacing a branch that shouldn't visibly interrupt whatever's on screen.</li>
+      </ul>
+
+      <div class="next-prev">
+        <a href="dialogue-format.html">
+          <span class="direction">← Back</span>
+          Dialogue Format
+        </a>
+        <a class="to-end" href="integration.html">
+          <span class="direction">Next</span>
+          Integration →
+        </a>
+      </div>
+    </div>
+  </main>
+</div>
+<script src="assets/js/site.js"></script>
+</body>
+</html>

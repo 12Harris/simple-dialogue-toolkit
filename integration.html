@@ -20,7 +20,9 @@
       <li><a href="getting-started.html">Getting Started</a></li>
       <li><a href="editor-guide.html">Editor Guide</a></li>
       <li><a href="dialogue-format.html">Dialogue Format</a></li>
+      <li><a href="tips.html">Tips</a></li>
       <li><a href="integration.html">Integration</a></li>
+      <li><a href="scripting.html">Scripting</a></li>
       <li><a href="exporting.html">Exporting</a></li>
       <li><a href="licensing.html">Licensing</a></li>
     </ul>
@@ -65,7 +67,7 @@
 
       <h2>4. Playing a dialogue in your own game</h2>
       <pre><code>DialogueManager.load_dialogue("res://path/to/your_dialogue.json")
-DialogueManager.start()</code></pre>
+DialogueManager.start_dialogue()</code></pre>
       <p>Then connect to its signals to drive your own UI, or just instance
       <code>scenes/main.tscn</code>'s <code>DialogueBox</code> node as a ready-made one.
       See <code>dialogue/dialogue.gd</code> for the minimal example the demo scene
@@ -76,7 +78,7 @@ DialogueManager.start()</code></pre>
         <tr><th>Signal</th><th>Fires when</th></tr>
         <tr>
           <td><code>dialogue_started</code></td>
-          <td><code>start()</code> is called.</td>
+          <td><code>start_dialogue()</code> is called.</td>
         </tr>
         <tr>
           <td><code>line_delivered(speaker, text)</code></td>
@@ -90,8 +92,15 @@ DialogueManager.start()</code></pre>
         </tr>
         <tr>
           <td><code>check_conditions(conditions)</code></td>
-          <td>A conditions node's line has finished displaying — evaluate branches in
+          <td>A conditions node is reached — fires once that node's own
+          <code>displaytime</code> wait has elapsed (see the note below), independent
+          of whether the line itself has finished displaying. Evaluate branches in
           order and advance to the first passing one, or the fallback.</td>
+        </tr>
+        <tr>
+          <td><code>dialogue_paused_evt</code></td>
+          <td><code>queue_pause_dialogue()</code> was called and the dialogue reached a
+          safe point to actually pause at.</td>
         </tr>
         <tr>
           <td><code>dialogue_ended</code></td>
@@ -100,6 +109,17 @@ DialogueManager.start()</code></pre>
         </tr>
       </table>
 
+      <div class="callout callout--note">
+        <span class="callout-title">Conditions nodes have no Continue button</span>
+        <p>Since a Conditions node auto-routes based on blackboard state rather than a
+        player choice, the bundled <code>DialogueBox</code> doesn't show a Continue
+        button for one — instead it shows a small countdown label, driven by the same
+        <code>DT n</code> / <code>[displaytime:n]</code> tag parsed from the node's own
+        text (see <a href="editor-guide.html">Editor Guide</a>). If a Conditions node's
+        text has no <code>displaytime</code> tag, there's no visible wait — it advances
+        immediately.</p>
+      </div>
+
       <h2>5. Blackboard variables</h2>
       <p>Variables used by <code>if</code> conditions (like
       <code>"charisma &gt;= 8"</code>) are read automatically from your dialogue file's
@@ -107,19 +127,18 @@ DialogueManager.start()</code></pre>
       starting the dialogue:</p>
       <pre><code>DialogueManager.set_blackboard_variable("charisma", 8)
 DialogueManager.set_blackboard_variable("has_permit", true)
-DialogueManager.start()</code></pre>
+DialogueManager.start_dialogue()</code></pre>
       <p>See <a href="dialogue-format.html">Dialogue Format</a> for exactly how condition
-      strings are parsed, including a runtime quirk around the <code>==</code>
-      operator worth knowing about before you rely on it.</p>
+      strings are parsed.</p>
 
       <div class="next-prev">
-        <a href="dialogue-format.html">
+        <a href="tips.html">
           <span class="direction">← Back</span>
-          Dialogue Format
+          Tips
         </a>
-        <a class="to-end" href="exporting.html">
+        <a class="to-end" href="scripting.html">
           <span class="direction">Next</span>
-          Exporting →
+          Scripting →
         </a>
       </div>
     </div>

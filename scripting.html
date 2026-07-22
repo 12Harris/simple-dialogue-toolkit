@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scripting · Simple Dialogue Toolkit Docs</title>
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<button class="nav-toggle" aria-label="Toggle navigation">☰</button>
+<div class="layout">
+  <nav class="sidebar">
+    <div class="sidebar-brand">
+      <span class="brand-mark">SDT</span>
+      <span class="brand-name">Simple Dialogue<br>Toolkit</span>
+    </div>
+    <div class="sidebar-section-label">Docs</div>
+    <ul class="nav-list">
+      <li><a href="index.html">Overview</a></li>
+      <li><a href="getting-started.html">Getting Started</a></li>
+      <li><a href="editor-guide.html">Editor Guide</a></li>
+      <li><a href="dialogue-format.html">Dialogue Format</a></li>
+      <li><a href="tips.html">Tips</a></li>
+      <li><a href="integration.html">Integration</a></li>
+      <li><a href="scripting.html">Scripting</a></li>
+      <li><a href="exporting.html">Exporting</a></li>
+      <li><a href="licensing.html">Licensing</a></li>
+    </ul>
+    <div class="sidebar-footer">Godot 4.6</div>
+  </nav>
+
+  <main class="content">
+    <div class="content-inner">
+      <div class="page-header">
+        <span class="eyebrow">Reference</span>
+        <h1>Scripting against DialogueManager</h1>
+        <p class="lede">A short tour of every method on the <code>DialogueManager</code>
+        autoload you're likely to call from your own game code. For the signals it
+        emits, see <a href="integration.html#signals">Integration</a>.</p>
+      </div>
+
+      <h2>Loading and starting</h2>
+
+      <h3><code>load_dialogue(path: String) -&gt; bool</code></h3>
+      <p>Reads a dialogue JSON file from disk and parses it. Also scans every
+      <code>if</code> string in the file and pre-registers each blackboard variable
+      name it finds (via <code>read_blackboard_variables()</code> internally), so they
+      exist as <code>null</code> before you set anything. Returns <code>false</code>
+      (and pushes an error) if the file can't be opened or doesn't parse as JSON.</p>
+      <pre><code>DialogueManager.load_dialogue("res://data/castle_dialogue.json")</code></pre>
+
+      <h3><code>start_dialogue(start_node_id: String = "start") -&gt; void</code></h3>
+      <p>Begins playback from the given node id (defaults to <code>"start"</code>).
+      Emits <code>dialogue_started</code>, then hands control to the per-frame node
+      processor — the first node's line arrives shortly after via
+      <code>line_delivered</code>. Does nothing but push an error if no dialogue has
+      been loaded yet.</p>
+
+      <h2>Blackboard variables</h2>
+
+      <h3><code>set_blackboard_variable(variable: String, value) -&gt; void</code></h3>
+      <p>Sets a value your <code>if</code> conditions can read. Call this any time
+      before (or during) a dialogue — conditions are evaluated live at each
+      choices/conditions node, not snapshotted at load time.</p>
+      <pre><code>DialogueManager.set_blackboard_variable("reputation", 5)
+DialogueManager.set_blackboard_variable("has_seal", true)</code></pre>
+
+      <h3><code>read_blackboard_variables(path: String) -&gt; Dictionary</code></h3>
+      <p>Scans a dialogue file's <code>if</code> strings and returns a
+      <code>{variable_name: null}</code> dictionary of every variable referenced in it.
+      Called automatically by <code>load_dialogue()</code> — you generally don't need
+      to call this yourself, unless you want to inspect what variables a dialogue file
+      expects before loading it (e.g. to build a debug panel).</p>
+
+      <h2>Advancing the dialogue</h2>
+
+      <h3><code>advance(choice_index: int = -1) -&gt; void</code></h3>
+      <p>Moves to the next node. For a plain line, call it with no argument. For a
+      choices or conditions node, pass the index of the choice/branch that was picked
+      (or that passed) — this is what <code>DialogueBox</code>'s bundled UI already
+      does for you when a choice button is pressed or a condition passes, so you'll
+      mostly only call this directly if you're writing your own UI instead of using
+      the bundled <code>DialogueBox</code>.</p>
+
+      <h3><code>queue_pause_dialogue() -&gt; void</code></h3>
+      <p>Requests that the dialogue pause at the next safe point (the start of the next
+      node), rather than pausing mid-node. Once that point is reached,
+      <code>dialogue_paused_evt</code> fires and the internal loop stops advancing until
+      you resume it.</p>
+
+      <h3><code>continue_dialogue() -&gt; void</code></h3>
+      <p>Resumes a dialogue previously paused via <code>queue_pause_dialogue()</code>.
+      Does nothing if the dialogue isn't currently paused.</p>
+      <pre><code>DialogueManager.queue_pause_dialogue()
+DialogueManager.dialogue_paused_evt.connect(func():
+    await get_tree().create_timer(3.0).timeout
+    DialogueManager.continue_dialogue()
+)</code></pre>
+      <p>This pause/resume pair is what lets you interrupt a dialogue for something
+      else in your game (a cutscene, a stealth check, whatever) without tearing down
+      and reloading it — see <code>dialogue/dialogue.gd</code> for the bundled example
+      that does exactly this.</p>
+
+      <h2>Reading current state</h2>
+
+      <h3><code>get_current_node() -&gt; Dictionary</code></h3>
+      <p>Returns the raw node data (as parsed from JSON) for whichever node is
+      currently active — useful for checking <code>.has("choices")</code> or
+      <code>.has("conditions")</code> from your own UI code, the same way
+      <code>DialogueBox.gd</code> does.</p>
+
+      <h3><code>get_current_node_id() -&gt; String</code></h3>
+      <p>Returns the id string of the current node — handy for save/load or debug
+      logging.</p>
+
+      <h3><code>eval(condition: String) -&gt; bool</code></h3>
+      <p>Evaluates a single <code>if</code>-style condition string against the current
+      blackboard values, using the same rules described in
+      <a href="dialogue-format.html">Dialogue Format</a>. You generally don't need to
+      call this yourself — <code>DialogueBox.gd</code> already calls it for you to
+      decide which choices to show and which condition branch to take — but it's
+      available if you want to check a condition from your own code without waiting
+      for the dialogue to reach that node.</p>
+
+      <h2>Not usually called directly</h2>
+      <p>A few methods exist mainly for the bundled <code>DialogueBox</code> to hook
+      into, and you won't normally call them yourself unless you're replacing it with
+      your own UI:</p>
+      <ul>
+        <li><code>register_dialogue_box(box: DialogueBox)</code> — called
+        automatically by <code>DialogueBox._ready()</code> to tell
+        <code>DialogueManager</code> which UI instance to drive. If you write your own
+        dialogue UI from scratch instead of using the bundled one, call this yourself
+        with your own node so the per-node timers (<code>timeout</code>,
+        <code>displaytime</code>) have somewhere to show/hide.</li>
+        <li><code>dialogue_box_finished_displaying()</code> — a connection point kept
+        for compatibility; it's currently a no-op. The actual auto-advance timing for
+        conditions nodes runs on the node's own <code>displaytime</code> tag inside the
+        internal node processor instead (see <a href="tips.html">Tips</a> for how that
+        timer works).</li>
+      </ul>
+
+      <div class="next-prev">
+        <a href="integration.html">
+          <span class="direction">← Back</span>
+          Integration
+        </a>
+        <a class="to-end" href="exporting.html">
+          <span class="direction">Next</span>
+          Exporting →
+        </a>
+      </div>
+    </div>
+  </main>
+</div>
+<script src="assets/js/site.js"></script>
+</body>
+</html>
